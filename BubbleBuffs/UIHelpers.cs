@@ -13,9 +13,9 @@ namespace BubbleBuffs {
         public static WidgetPaths_1_0 WidgetPaths;
         public static Transform Settings => SceneManager.GetSceneByName("UI_LoadingScreen_Scene").GetRootGameObjects().First(x => x.name.StartsWith("CommonPCView")).ChildTransform("Canvas/SettingsView");
         public static Transform StaticRoot => Game.Instance.UI.Canvas.transform;
-        public static Transform ServiceWindow => StaticRoot.Find("ServiceWindowsPCView");
+        public static Transform ServiceWindow => StaticRoot.Find("ServiceWindowsPCView") ?? StaticRoot.Find("ServiceWindowsConsoleView");
 
-        public static Transform SpellbookScreen => ServiceWindow.Find(WidgetPaths.SpellScreen);
+        public static Transform SpellbookScreen => ServiceWindow.Find(WidgetPaths.SpellScreen) ?? (WidgetPaths.SpellScreenConsole != null ? ServiceWindow.Find(WidgetPaths.SpellScreenConsole) : null);
         public static Transform MythicInfoView => ServiceWindow.Find(WidgetPaths.MythicView);
         public static Transform EncyclopediaView => ServiceWindow.Find(WidgetPaths.EncyclopediaView);
 
@@ -135,6 +135,7 @@ namespace BubbleBuffs {
     }
     class WidgetPaths_1_0 {
         public virtual string SpellScreen => "SpellbookView/SpellbookScreen";
+        public virtual string SpellScreenConsole => null;
         public virtual string MythicView => "MythicInfoView";
         public virtual string EncyclopediaView => "EncyclopediaView";
 
@@ -153,6 +154,7 @@ namespace BubbleBuffs {
     }
     class WidgetPaths_1_4 : WidgetPaths_1_2 {
         public override string SpellScreen => "Background/Windows/SpellbookPCView/SpellbookScreen";
+        public override string SpellScreenConsole => "Background/Windows/SpellbookConsoleView/Spellbook";
         public override string MythicView => "Background/Windows/MythicInfoPCView";
         public override string EncyclopediaView => "Background/Windows/EncyclopediaPCView";
         public override string CharacterScreen => "Background/Windows/CharacterInfoPCView/CharacterScreen";

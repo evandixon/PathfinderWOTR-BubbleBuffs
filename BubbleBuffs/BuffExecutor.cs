@@ -2,53 +2,20 @@
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
-using Kingmaker.Controllers;
 using Kingmaker.EntitySystem.Entities;
-using Kingmaker.RuleSystem;
-using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.Models.Log.CombatLog_ThreadSystem;
 using Kingmaker.UI.Models.Log.CombatLog_ThreadSystem.LogThreads.Common;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Components;
-using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Utility;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace BubbleBuffs {
 
-    public interface IBuffExecutionEngine {
-        public IEnumerator CreateSpellCastRoutine(List<CastTask> tasks);
-    }
-    public class BubbleBuffGlobalController : MonoBehaviour {
-
-        public static BubbleBuffGlobalController Instance { get; private set; }
-
-        public const int BATCH_SIZE = 8;
-        public const float DELAY = 0.05f;
-
-        private void Awake() {
-            Instance = this;
-        }
-
-        public void Destroy() {
-        }
-
-        public void CastSpells(List<CastTask> tasks) {
-            var castingCoroutine = Engine.CreateSpellCastRoutine(tasks);
-            StartCoroutine(castingCoroutine);
-        }
-
-        public static IBuffExecutionEngine Engine =>
-            GlobalBubbleBuffer.Instance.SpellbookController.state.VerboseCasting 
-                ? new AnimatedExecutionEngine() 
-                : new InstantExecutionEngine();
-    }
     public class BuffExecutor {
         public BufferState State;
 

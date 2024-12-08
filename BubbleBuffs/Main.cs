@@ -30,43 +30,9 @@ using Newtonsoft.Json;
 using Kingmaker.Blueprints.Items.Shields;
 using Kingmaker.Designers;
 using System.Linq.Expressions;
+using Kingmaker.ElementsSystem;
 
 namespace BubbleBuffs {
-
-    public class BubbleSettings {
-
-        private BubbleSettings() { }
-
-        public static UISettingsEntitySliderFloat MakeSliderFloat(string key, string name, string tooltip, float min, float max, float step) {
-            var slider = ScriptableObject.CreateInstance<UISettingsEntitySliderFloat>();
-            slider.m_Description = Helpers.CreateString($"{key}.description", name);
-            slider.m_TooltipDescription = Helpers.CreateString($"{key}.tooltip-description", tooltip);
-            slider.m_MinValue = min;
-            slider.m_MaxValue = max;
-            slider.m_Step = step;
-            slider.m_ShowValueText = true;
-            slider.m_DecimalPlaces = 1;
-            slider.m_ShowVisualConnection = true;
-
-            return slider;
-        }
-
-        public static UISettingsGroup MakeSettingsGroup(string key, string name, params UISettingsEntityBase[] settings) {
-            UISettingsGroup group = ScriptableObject.CreateInstance<UISettingsGroup>();
-            group.Title = Helpers.CreateString(key, name);
-
-            group.SettingsList = settings;
-
-            return group;
-        }
-
-        public void Initialize() {
-        }
-
-        private static readonly BubbleSettings instance = new();
-        public static BubbleSettings Instance { get { return instance; } }
-    }
-
 
     //[HarmonyPatch(typeof(UISettingsManager), "Initialize")]
     //static class SettingsInjector {
@@ -105,6 +71,7 @@ namespace BubbleBuffs {
 #endif
             CheatsCommon.SendAnalyticEvents?.Set(false);
             modEntry.OnUpdate = OnUpdate;
+            modEntry.OnGUI = OnGUI;
             ModSettings.ModEntry = modEntry;
             ModPath = modEntry.Path;
             Main.Log("LOADING");
@@ -157,6 +124,27 @@ namespace BubbleBuffs {
                 modEntry.GetType().GetMethod("Reload", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(modEntry, new object[] {});
             }
 #endif
+        }
+
+        public static void OnGUI(UnityModManager.ModEntry modEntry) {
+            try {
+                if (GUILayout.Button("Reinstall")) {
+                    GlobalBubbleBuffer.Instance.TryInstallUI();
+                }
+                if (GUILayout.Button("Buff Normal")) {
+                    GlobalBubbleBuffer.Execute(BuffGroup.Long);
+                }
+                if (GUILayout.Button("Buff Important")) {
+                    GlobalBubbleBuffer.Execute(BuffGroup.Important);
+                }
+                if (GUILayout.Button("Buff Short")) {
+                    GlobalBubbleBuffer.Execute(BuffGroup.Short);
+                }
+            } catch (Exception ex) {
+                ModSettings.ModEntry.Logger.LogException(ex);
+                ModSettings.ModEntry.Logger.Log(ex.StackTrace);
+                throw;
+            }
         }
 
         internal static void LogError(JsonSerializationException ex) {
